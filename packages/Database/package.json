@@ -1,0 +1,15 @@
+{
+  "name": "@workspace/database",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/mongodb.ts",
+  "types": "./src/mongodb.ts",
+  "dependencies": {
+    "mongoose": "^8.0.0"
+  },
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push"
+  }
+}
+  
