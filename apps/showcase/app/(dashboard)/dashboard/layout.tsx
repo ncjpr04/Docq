@@ -1,6 +1,7 @@
 import React, { ReactNode, memo } from "react";
 import Link from "next/link";
 import { UserMenu } from "@workspace/ui/components/user-menu";
+import { Providers } from "@/app/providers";
 
 interface DashboardLayoutProps {
   children: ReactNode;
@@ -29,7 +30,9 @@ const DashboardLayout = memo(({ children }: DashboardLayoutProps) => {
       </header>
 
       {/* Main Content */}
-      <main>{children}</main>
+      <Providers>
+        <main>{children}</main>
+      </Providers>
     </div>
   );
 });

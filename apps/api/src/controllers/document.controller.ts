@@ -10,34 +10,29 @@ export class DocumentController {
    * Validates request body, checks user authentication, and creates a new document.
    */
   static async createDocument(req: AuthRequest, res: Response) {
-    console.log('Received request to create document:', req.body);
+    console.log('[DOCUMENT] Creating a document:', req.body);
     try {
-      // Validate the request body using Zod schema
       const validatedData = documentSchema.parse(req.body);
-      console.log('Validated request data:', validatedData);
+      console.log('[DOCUMENT] Validated request data:', validatedData);
 
       const { title, content } = validatedData;
-      const userId = req.userId;
+      const userId = req.userId as string; // Safe to assume it's defined due to authentication middleware
 
-      // Check if userId exists (authentication check)
-      if (!userId) {
-        console.warn('Unauthorized access attempt');
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
-
-      // Create a new document
       const document = await DocumentService.createDocument(userId, title, content);
-      console.log('Document created successfully:', document);
+      console.log('[DOCUMENT] Document created:', document);
+
       return res.status(201).json(document);
     } catch (error) {
-      console.error('Error creating document:', error);
+      console.error('[DOCUMENT] Error creating document:', error);
+
       if (error instanceof z.ZodError) {
         return res.status(400).json({ error: 'Invalid input', details: error.errors });
       }
-      if (error instanceof Error) {
-        return res.status(500).json({ error: 'Failed to create document', message: error.message });
-      }
-      return res.status(500).json({ error: 'Internal server error' });
+
+      return res.status(500).json({
+        error: 'Failed to create document',
+        message: error instanceof Error ? error.message : 'Unexpected error',
+      });
     }
   }
 
@@ -45,24 +40,21 @@ export class DocumentController {
    * Retrieves all documents belonging to the authenticated user.
    */
   static async getAllDocuments(req: AuthRequest, res: Response) {
-    console.log('Received request to fetch all documents for user:', req.userId);
+    console.log('[DOCUMENT] Fetching documents for user:', req.userId);
     try {
-      const userId = req.userId;
-      if (!userId) {
-        console.warn('Unauthorized access attempt');
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
+      const userId = req.userId as string;
 
-      // Fetch documents for the user
       const documents = await DocumentService.getDocuments(userId);
-      console.log(`Fetched ${documents.length} documents for user:`, userId);
+      console.log(`[DOCUMENT] Retrieved ${documents.length} documents for user: ${userId}`);
+
       return res.json(documents);
     } catch (error) {
-      console.error('Error fetching documents:', error);
-      if (error instanceof Error) {
-        return res.status(500).json({ error: 'Failed to fetch documents', message: error.message });
-      }
-      return res.status(500).json({ error: 'Internal server error' });
+      console.error('[DOCUMENT] Error fetching documents:', error);
+
+      return res.status(500).json({
+        error: 'Failed to fetch documents',
+        message: error instanceof Error ? error.message : 'Unexpected error',
+      });
     }
   }
 }

@@ -47,7 +47,7 @@ export default function Signup() {
       });
 
       console.log("Signup response:", data);
-      
+
       // Automatically log in the user after signup
       if (data.token) {
         setToken(data.token);
@@ -58,14 +58,14 @@ export default function Signup() {
         router.push("/signin?registered=true");
       }
     } catch (error: any) {
-      console.error("Signup error:", error);
-
+      console.error("Signup error:", error.response.data.message);
+      toast.error(error.response.data.message)
       const errorMsg =
         axios.isAxiosError(error) && error.response?.data?.error
-          ? error.response.data.error
+          ? error.message
           : "Something went wrong. Please try again.";
-
-      toast.error(errorMsg);
+      console.log(errorMsg);
+      // toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

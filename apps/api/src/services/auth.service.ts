@@ -45,7 +45,7 @@ export class AuthService {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
-    return { user: { ...user, password: undefined } };
+    return { user: { ...user, password: undefined }, token };
   }
 
   static async createUser(firstName: string, lastName: string, email: string, password: string, res: Response) {
@@ -84,6 +84,6 @@ export class AuthService {
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
   
-    return { user: { ...user.toObject(), password: undefined } };
+    return { user: { ...user.toObject(), password: undefined }, token };
   }
 }
