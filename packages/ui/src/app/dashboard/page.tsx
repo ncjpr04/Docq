@@ -1,5 +1,4 @@
 import { AppSidebar } from "@workspace/ui/components/app-sidebar"
-import { ModeToggle } from "@workspace/ui/components/theme-toggle"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,24 +6,22 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/ui/breadcrumb"
-import { Separator } from "@workspace/ui/components/ui/separator"
+} from "@workspace/ui/components/breadcrumb"
+import { Separator } from "@workspace/ui/components/separator"
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@workspace/ui/components/ui/sidebar"
-import { ThemeProvider } from "@workspace/ui/providers/theme-provider"
+} from "@workspace/ui/components/sidebar"
 
 export default function Page() {
   return (
-    <ThemeProvider>
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" /><ModeToggle/>
+            <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
@@ -51,6 +48,5 @@ export default function Page() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-    </ThemeProvider>
   )
 }

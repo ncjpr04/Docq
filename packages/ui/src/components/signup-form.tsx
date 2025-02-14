@@ -11,8 +11,7 @@ import { cn } from "../lib/utils.js";
 
 interface SignupFormProps {
   onSubmit: (formData: {
-    firstName: string;
-    lastName: string;
+     name: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -26,8 +25,8 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
     const formData = new FormData(e.currentTarget);
     
     onSubmit({
-      firstName: formData.get('firstName') as string,
-      lastName: formData.get('lastName') as string,
+      // firstName: formData.get('firstName') as string,
+      name: formData.get('name') as string,
       email: formData.get('email') as string,
       password: formData.get('password') as string,
       confirmPassword: formData.get('confirmPassword') as string,
@@ -38,7 +37,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
     <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
       <form className="my-8" onSubmit={handleSubmit}>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
-          <LabelInputContainer>
+        {/* <LabelInputContainer>
             <Label htmlFor="firstName">First name</Label>
             <Input 
               id="firstName" 
@@ -49,8 +48,20 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
               minLength={2}
               className="focus-visible:ring-2 focus-visible:ring-blue-500"
             />
-          </LabelInputContainer>
+          </LabelInputContainer> */}
           <LabelInputContainer>
+            <Label htmlFor="name">First name</Label>
+            <Input 
+              id="name" 
+              name="name" 
+              placeholder="John" 
+              type="text" 
+              required
+              minLength={2}
+              className="focus-visible:ring-2 focus-visible:ring-blue-500"
+            />
+          </LabelInputContainer>
+          {/* <LabelInputContainer>
             <Label htmlFor="lastName">Last name</Label>
             <Input 
               id="lastName" 
@@ -61,7 +72,7 @@ export default function SignupForm({ onSubmit, loading }: SignupFormProps) {
               minLength={2}
               className="focus-visible:ring-2 focus-visible:ring-blue-500"
             />
-          </LabelInputContainer>
+          </LabelInputContainer> */}
         </div>
         
         <LabelInputContainer className="mb-4">

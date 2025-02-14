@@ -932,3 +932,345 @@ docq
 
 ```#   d o c q  
  
+```
+docq
+├─ .cursor
+│  └─ rules
+│     └─ docq.mdc
+├─ .eslintrc.js
+├─ .npmrc
+├─ apps
+│  ├─ api
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ controllers
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  └─ document.controller.ts
+│  │  │  ├─ index.ts
+│  │  │  ├─ middleware
+│  │  │  │  ├─ auth.middleware.ts
+│  │  │  │  └─ validation.middleware.ts
+│  │  │  ├─ routes
+│  │  │  │  ├─ auth.router.ts
+│  │  │  │  └─ document.router.ts
+│  │  │  ├─ services
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  └─ document.service.ts
+│  │  │  ├─ types
+│  │  │  │  ├─ auth.ts
+│  │  │  │  └─ express.d.ts
+│  │  │  └─ validation
+│  │  │     ├─ auth.schema.ts
+│  │  │     └─ document.schema.ts
+│  │  ├─ tsconfig.json
+│  │  └─ turbo.json
+│  ├─ dashboard
+│  │  ├─ eslint.config.mjs
+│  │  ├─ next-env.d.ts
+│  │  ├─ next.config.ts
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ postcss.config.mjs
+│  │  ├─ public
+│  │  │  ├─ file.svg
+│  │  │  ├─ globe.svg
+│  │  │  ├─ next.svg
+│  │  │  ├─ vercel.svg
+│  │  │  └─ window.svg
+│  │  ├─ README.md
+│  │  ├─ src
+│  │  │  └─ app
+│  │  │     ├─ favicon.ico
+│  │  │     ├─ globals.css
+│  │  │     ├─ layout.tsx
+│  │  │     └─ page.tsx
+│  │  ├─ tailwind.config.ts
+│  │  └─ tsconfig.json
+│  ├─ editor
+│  │  ├─ eslint.config.mjs
+│  │  ├─ next-env.d.ts
+│  │  ├─ next.config.ts
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ postcss.config.mjs
+│  │  ├─ public
+│  │  │  ├─ file.svg
+│  │  │  ├─ globe.svg
+│  │  │  ├─ next.svg
+│  │  │  ├─ vercel.svg
+│  │  │  └─ window.svg
+│  │  ├─ README.md
+│  │  ├─ src
+│  │  │  └─ app
+│  │  │     ├─ favicon.ico
+│  │  │     ├─ globals.css
+│  │  │     ├─ layout.tsx
+│  │  │     └─ page.tsx
+│  │  ├─ tailwind.config.ts
+│  │  └─ tsconfig.json
+│  └─ showcase
+│     ├─ app
+│     │  ├─ (auth)
+│     │  │  ├─ signin
+│     │  │  │  └─ page.tsx
+│     │  │  └─ signup
+│     │  │     └─ page.tsx
+│     │  ├─ (dashboard)
+│     │  │  └─ dashboard
+│     │  │     ├─ layout.tsx
+│     │  │     └─ page.tsx
+│     │  ├─ favicon.ico
+│     │  ├─ layout.tsx
+│     │  ├─ page.tsx
+│     │  └─ providers.tsx
+│     ├─ components
+│     │  └─ providers.tsx
+│     ├─ components.json
+│     ├─ eslint.config.js
+│     ├─ hooks
+│     ├─ lib
+│     ├─ next-env.d.ts
+│     ├─ next.config.mjs
+│     ├─ package.json
+│     ├─ postcss.config.mjs
+│     ├─ tailwind.config.ts
+│     └─ tsconfig.json
+├─ package.json
+├─ packages
+│  ├─ Database
+│  │  ├─ mongodb.config.js
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  └─ schema.prisma
+│  │  └─ src
+│  │     ├─ mongodb.ts
+│  │     └─ prisma.ts
+│  ├─ eslint-config
+│  │  ├─ base.js
+│  │  ├─ next.js
+│  │  ├─ package.json
+│  │  ├─ react-internal.js
+│  │  └─ README.md
+│  ├─ typescript-config
+│  │  ├─ base.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  ├─ react-library.json
+│  │  └─ README.md
+│  └─ ui
+│     ├─ components.json
+│     ├─ eslint.config.js
+│     ├─ package.json
+│     ├─ postcss.config.mjs
+│     ├─ src
+│     │  ├─ components
+│     │  │  ├─ button.tsx
+│     │  │  ├─ loader.tsx
+│     │  │  ├─ signin-form.tsx
+│     │  │  ├─ signup-form.tsx
+│     │  │  ├─ ui
+│     │  │  │  ├─ input.tsx
+│     │  │  │  └─ label.tsx
+│     │  │  └─ user-menu.tsx
+│     │  ├─ context
+│     │  │  └─ auth-context.tsx
+│     │  ├─ hooks
+│     │  ├─ lib
+│     │  │  └─ utils.ts
+│     │  ├─ styles
+│     │  │  └─ globals.css
+│     │  └─ utils
+│     │     └─ auth.ts
+│     ├─ tailwind.config.ts
+│     ├─ tsconfig.json
+│     └─ tsconfig.lint.json
+├─ pnpm-lock.yaml
+├─ pnpm-workspace.yaml
+├─ README.md
+├─ tsconfig.json
+└─ turbo.json
+
+```
+```
+docq
+├─ .cursor
+│  └─ rules
+│     └─ docq.mdc
+├─ .eslintrc.js
+├─ .npmrc
+├─ apps
+│  ├─ api
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ src
+│  │  │  ├─ controllers
+│  │  │  │  ├─ auth.controller.ts
+│  │  │  │  └─ document.controller.ts
+│  │  │  ├─ index.ts
+│  │  │  ├─ middleware
+│  │  │  │  ├─ auth.middleware.ts
+│  │  │  │  └─ validation.middleware.ts
+│  │  │  ├─ routes
+│  │  │  │  ├─ auth.router.ts
+│  │  │  │  └─ document.router.ts
+│  │  │  ├─ services
+│  │  │  │  ├─ auth.service.ts
+│  │  │  │  └─ document.service.ts
+│  │  │  ├─ types
+│  │  │  │  ├─ auth.ts
+│  │  │  │  └─ express.d.ts
+│  │  │  └─ validation
+│  │  │     ├─ auth.schema.ts
+│  │  │     └─ document.schema.ts
+│  │  ├─ tsconfig.json
+│  │  └─ turbo.json
+│  ├─ dashboard
+│  │  ├─ components.json
+│  │  ├─ eslint.config.mjs
+│  │  ├─ next-env.d.ts
+│  │  ├─ next.config.ts
+│  │  ├─ package.json
+│  │  ├─ postcss.config.mjs
+│  │  ├─ public
+│  │  │  ├─ file.svg
+│  │  │  ├─ globe.svg
+│  │  │  ├─ next.svg
+│  │  │  ├─ vercel.svg
+│  │  │  └─ window.svg
+│  │  ├─ README.md
+│  │  ├─ src
+│  │  │  └─ app
+│  │  │     ├─ favicon.ico
+│  │  │     ├─ layout.tsx
+│  │  │     └─ page.tsx
+│  │  ├─ tailwind.config.ts
+│  │  └─ tsconfig.json
+│  ├─ editor
+│  │  ├─ eslint.config.mjs
+│  │  ├─ next-env.d.ts
+│  │  ├─ next.config.ts
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ postcss.config.mjs
+│  │  ├─ public
+│  │  │  ├─ file.svg
+│  │  │  ├─ globe.svg
+│  │  │  ├─ next.svg
+│  │  │  ├─ vercel.svg
+│  │  │  └─ window.svg
+│  │  ├─ README.md
+│  │  ├─ src
+│  │  │  └─ app
+│  │  │     ├─ favicon.ico
+│  │  │     ├─ globals.css
+│  │  │     ├─ layout.tsx
+│  │  │     └─ page.tsx
+│  │  ├─ tailwind.config.ts
+│  │  └─ tsconfig.json
+│  └─ showcase
+│     ├─ app
+│     │  ├─ (auth)
+│     │  │  ├─ signin
+│     │  │  │  └─ page.tsx
+│     │  │  └─ signup
+│     │  │     └─ page.tsx
+│     │  ├─ (dashboard)
+│     │  │  └─ dashboard
+│     │  │     ├─ layout.tsx
+│     │  │     └─ page.tsx
+│     │  ├─ favicon.ico
+│     │  ├─ layout.tsx
+│     │  ├─ page.tsx
+│     │  └─ providers.tsx
+│     ├─ components
+│     │  └─ providers.tsx
+│     ├─ components.json
+│     ├─ eslint.config.js
+│     ├─ hooks
+│     ├─ lib
+│     ├─ next-env.d.ts
+│     ├─ next.config.mjs
+│     ├─ package.json
+│     ├─ postcss.config.mjs
+│     ├─ tailwind.config.ts
+│     └─ tsconfig.json
+├─ package.json
+├─ packages
+│  ├─ Database
+│  │  ├─ mongodb.config.js
+│  │  ├─ package-lock.json
+│  │  ├─ package.json
+│  │  ├─ prisma
+│  │  │  └─ schema.prisma
+│  │  └─ src
+│  │     ├─ mongodb.ts
+│  │     └─ prisma.ts
+│  ├─ eslint-config
+│  │  ├─ base.js
+│  │  ├─ next.js
+│  │  ├─ package.json
+│  │  ├─ react-internal.js
+│  │  └─ README.md
+│  ├─ typescript-config
+│  │  ├─ base.json
+│  │  ├─ nextjs.json
+│  │  ├─ package.json
+│  │  ├─ react-library.json
+│  │  └─ README.md
+│  └─ ui
+│     ├─ components.json
+│     ├─ eslint.config.js
+│     ├─ package.json
+│     ├─ postcss.config.mjs
+│     ├─ src
+│     │  ├─ app
+│     │  │  └─ dashboard
+│     │  │     └─ page.tsx
+│     │  ├─ components
+│     │  │  ├─ app-sidebar.tsx
+│     │  │  ├─ loader.tsx
+│     │  │  ├─ nav-main.tsx
+│     │  │  ├─ nav-projects.tsx
+│     │  │  ├─ nav-user.tsx
+│     │  │  ├─ signin-form.tsx
+│     │  │  ├─ signup-form.tsx
+│     │  │  ├─ team-switcher.tsx
+│     │  │  ├─ theme-toggle.tsx
+│     │  │  ├─ ui
+│     │  │  │  ├─ avatar.tsx
+│     │  │  │  ├─ breadcrumb.tsx
+│     │  │  │  ├─ button.tsx
+│     │  │  │  ├─ collapsible.tsx
+│     │  │  │  ├─ dropdown-menu.tsx
+│     │  │  │  ├─ input.tsx
+│     │  │  │  ├─ label.tsx
+│     │  │  │  ├─ separator.tsx
+│     │  │  │  ├─ sheet.tsx
+│     │  │  │  ├─ sidebar.tsx
+│     │  │  │  ├─ skeleton.tsx
+│     │  │  │  └─ tooltip.tsx
+│     │  │  └─ user-menu.tsx
+│     │  ├─ context
+│     │  │  └─ auth-context.tsx
+│     │  ├─ hooks
+│     │  │  └─ use-mobile.tsx
+│     │  ├─ lib
+│     │  │  └─ utils.ts
+│     │  ├─ providers
+│     │  │  └─ theme-provider.tsx
+│     │  ├─ styles
+│     │  │  └─ globals.css
+│     │  └─ utils
+│     │     └─ auth.ts
+│     ├─ tailwind.config.ts
+│     ├─ tsconfig.json
+│     └─ tsconfig.lint.json
+├─ pnpm-lock.yaml
+├─ pnpm-workspace.yaml
+├─ README.md
+├─ tsconfig.json
+└─ turbo.json
+
+```

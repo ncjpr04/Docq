@@ -1,95 +1,62 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import axios from "axios";
 import SigninForm from "@workspace/ui/components/signin-form";
-import { handleAuth } from "@workspace/ui/utils/auth";
 import { useAuth } from "@workspace/ui/context/auth-context";
 import Link from "next/link";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function Signin() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { setToken, isAuthenticated, isLoading } = useAuth();
+  const { user, login } = useAuth();
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/dashboard");
+    if (user) {
+      console.log("[Signin] User already authenticated, redirecting to dashboard");
+      router.push("/dashboard");
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [user, router]);
 
-  // Show success message if user is redirected after registration
-  useEffect(() => {
-    if (searchParams.get("registered") === "true") {
-      toast.success("Account created successfully! Please sign in.");
-    }
-  }, [searchParams]);
+  const handleSubmit = async (email: string, password: string) => {
+    if (loading) return;
 
-  // Input validation function
-  const validateInput = (email: string, password: string) => {
-    if (!email.trim() || !password.trim()) {
-      throw new Error("All fields are required.");
-    }
-
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!emailRegex.test(email)) {
-      throw new Error("Invalid email format.");
+    try {
+      setLoading(true);
+      console.log("[Signin] Attempting login...");
+      const response = await login(email, password);
+      
+      if (response.success) {
+        toast.success("Welcome back!");
+        console.log("[Signin] Login successful, redirecting to dashboard");
+        router.push("/dashboard");
+      } else {
+        toast.error(response.error || "Login failed");
+      }
+    } catch (error: any) {
+      console.error("[Signin] Login error:", error);
+      toast.error(error.message || "An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Debounced API call to prevent multiple submissions
-  const handleSubmit = useCallback(
-    async (email: string, password: string) => {
-      if (loading) return; // Prevent multiple submissions
+  // Only show loading state during initial auth check
+  if (loading && !user) {
+    return <div>Loading...</div>;
+  }
 
-      try {
-        setLoading(true);
-        validateInput(email, password);
-
-        console.log("Signing in user:", { email });
-
-        const { data } = await axios.post(`${API_BASE_URL}/auth/login`, {
-          email: email.toLowerCase().trim(),
-          password,
-        });
-
-        console.log("Login response:", data);
-        handleAuth(data.token);
-        setToken(data.token);
-        router.push("/dashboard");
-        toast.success("Signed in successfully!");
-      } catch (error: any) {
-        console.error("Login error:", error);
-
-        let errorMsg = "An unexpected error occurred. Please try again.";
-        if (error.response) {
-          errorMsg = error.response.data?.error || errorMsg;
-        } else if (error.request) {
-          errorMsg = "Network error. Please check your connection.";
-        }
-
-        toast.error(errorMsg);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [loading, setToken, router]
-  );
-
-  // Prevent rendering form if already authenticated
-  if (isAuthenticated) return null;
+  // Don't render the form if user is authenticated
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center gap-4 w-full max-w-md px-4">
         <h1 className="text-2xl font-bold mb-4">Welcome back</h1>
-        <SigninForm onSubmit={handleSubmit} loading={loading} aria-busy={loading} />
+        <SigninForm onSubmit={handleSubmit} loading={loading} />
         <p className="text-sm text-gray-600 dark:text-gray-400">
           Don't have an account?{" "}
           <Link href="/signup" className="text-blue-600 hover:underline">

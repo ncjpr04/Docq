@@ -1,88 +1,168 @@
-"use client";
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import axios from "axios";
 import { toast } from "sonner";
 
-interface AuthContextType {
-  token: string | null;
-  setToken: (token: string | null) => void;
-  logout: () => void;
-  isAuthenticated: boolean;
-  isLoading: boolean;
+interface User {
+    id: string;
+    name: string;
+    email: string;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+interface AuthResponse {
+    success: boolean;
+    data?: {
+        user: User;
+        message: string;
+    };
+    error?: string;
+}
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+interface AuthContextType {
+    user: User | null;
+    loading: boolean;
+    login: (email: string, password: string) => Promise<AuthResponse>;
+    signup: (name: string, email: string, password: string) => Promise<AuthResponse>;
+    logout: () => Promise<AuthResponse>;
+}
 
-  useEffect(() => {
-    // Check for token on mount
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-    }
-    setIsLoading(false);
+const AuthContext = createContext<AuthContextType | null>(null);
 
-    // Listen for auth changes from other tabs/windows
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'token') {
-        setToken(event.newValue);
-        if (!event.newValue) {
-          // Handle logout in other tabs
-          window.location.href = '/signin';
+// Update the API_URL configuration
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+    const [user, setUser] = useState<User | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    axios.defaults.withCredentials = true;
+
+    // Verify user session on mount
+    useEffect(() => {
+        let mounted = true;
+
+        const verifyUser = async () => {
+            console.log("[AuthContext] Verifying user session...");
+            try {
+                const res = await axios.get(`${API_URL}/auth/verify`);
+                if (mounted && res.data.success) {
+                    console.log("[AuthContext] User verified:", res.data.user);
+                    setUser(res.data.user);
+                } else {
+                    console.log("[AuthContext] No valid session");
+                    setUser(null);
+                }
+            } catch (error: any) {
+                console.error("[AuthContext] Verification failed:", error.response?.data?.message || error.message);
+                if (mounted) setUser(null);
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        };
+
+        verifyUser();
+
+        return () => {
+            mounted = false;
+        };
+    }, []);
+
+    const signup = async (name: string, email: string, password: string): Promise<AuthResponse> => {
+        console.log("[AuthContext] Initiating signup...");
+        try {
+            const res = await axios.post(`${API_URL}/auth/register`, {
+                name, email, password
+            });
+            
+            if (res.data.success) {
+                console.log("[AuthContext] Signup successful");
+                setUser(res.data.user);
+                return {
+                    success: true,
+                    data: res.data
+                };
+            }
+            return {
+                success: false,
+                error: res.data.message || "Signup failed"
+            };
+        } catch (error: any) {
+            console.error("[AuthContext] Signup error:", error.response?.data || error.message);
+            return {
+                success: false,
+                error: error.response?.data?.message || "Failed to create account"
+            };
         }
-      }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    const login = async (email: string, password: string): Promise<AuthResponse> => {
+        console.log("[AuthContext] Initiating login...");
+        try {
+            const res = await axios.post(`${API_URL}/auth/login`, {
+                email, password
+            });
+            
+            if (res.data.success) {
+                console.log("[AuthContext] Login successful");
+                setUser(res.data.user);
+                return {
+                    success: true,
+                    data: res.data
+                };
+            }
+            return {
+                success: false,
+                error: "Login failed"
+            };
+        } catch (error: any) {
+            console.error("[AuthContext] Login error:", error.response?.data || error.message);
+            return {
+                success: false,
+                error: error.response?.data?.message || "Invalid credentials"
+            };
+        }
+    };
 
-  const logout = () => {
-    try {
-      // Clear local storage
-      localStorage.removeItem("token");
-      
-      // Clear cookies
-      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-      
-      // Reset state
-      setToken(null);
+    const logout = async (): Promise<AuthResponse> => {
+        console.log("[AuthContext] Initiating logout...");
+        try {
+            const res = await axios.post(`${API_URL}/auth/logout`);
+            if (res.data.success) {
+                console.log("[AuthContext] Logout successful");
+                setUser(null);
+                window.location.href = '/signin';
+                return {
+                    success: true,
+                    data: res.data
+                };
+            }
+            return {
+                success: false,
+                error: "Logout failed"
+            };
+        } catch (error: any) {
+            console.error("[AuthContext] Logout error:", error.response?.data || error.message);
+            return {
+                success: false,
+                error: error.response?.data?.message || "Failed to logout"
+            };
+        }
+    };
 
-      // Broadcast logout to other tabs
-      localStorage.setItem('auth_timestamp', Date.now().toString());
+    return (
+        <AuthContext.Provider value={{ user, loading, login, signup, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
+};
 
-      // Show success message
-      toast.success('Logged out successfully');
-
-      // Redirect to signin
-      window.location.href = "/signin";
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Error logging out');
+// Custom hook to use auth
+export const useAuth = () => {
+    console.log("[useAuth] Hook called");
+    const context = useContext(AuthContext);
+    if (!context) {
+        console.error("[useAuth] No AuthContext found");
+        throw new Error("useAuth must be used within an AuthProvider");
     }
-  };
-
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        setToken,
-        logout,
-        isAuthenticated: !!token,
-        isLoading
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-} 
+    console.log("[useAuth] AuthContext found:", context);
+    return context;
+};

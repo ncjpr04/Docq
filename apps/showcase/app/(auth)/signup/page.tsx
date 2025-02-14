@@ -1,87 +1,171 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import axios from "axios";
 import SignupForm from "@workspace/ui/components/signup-form";
 import { useAuth } from "@workspace/ui/context/auth-context";
-
-interface SignupData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import Link from "next/link";
 
 export default function Signup() {
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const { isAuthenticated, isLoading, setToken } = useAuth();
+  const { user, loading, signup } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/dashboard");
+    if (!loading && user) {
+      console.log("[Signup] User already authenticated, redirecting to dashboard");
+      router.push("/dashboard");
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [loading, user, router]);
 
-  const handleSubmit = async (formData: SignupData) => {
-    if (loading) return; // Prevent multiple submissions
+  const handleSubmit = async ({ name, email, password, confirmPassword }: {
+    name: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }) => {
+    if (isLoading) return;
 
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords don't match");
+    try {
+      setIsLoading(true);
+
+      // Basic validations with user-friendly messages
+      if (!name?.trim()) {
+        toast.error("Please enter your name");
+        return;
+      }
+      if (!email?.trim()) {
+        toast.error("Please enter your email address");
+        return;
+      }
+      if (!password) {
+        toast.error("Please enter a password");
+        return;
+      }
+      if (!confirmPassword) {
+        toast.error("Please confirm your password");
+        return;
+      }
+      if (password !== confirmPassword) {
+        toast.error("Passwords don't match. Please try again.");
+        return;
+      }
+
+      // Password validation before API call
+      const passwordErrors = [];
+      if (password.length < 8) {
+        passwordErrors.push("At least 8 characters long");
+      }
+      if (!password.match(/[A-Z]/)) {
+        passwordErrors.push("One uppercase letter");
+      }
+      if (!password.match(/[a-z]/)) {
+        passwordErrors.push("One lowercase letter");
+      }
+      if (!password.match(/[0-9]/)) {
+        passwordErrors.push("One number");
+      }
+      if (!password.match(/[\W_]/)) {
+        passwordErrors.push("One special character");
+      }
+
+      if (passwordErrors.length > 0) {
+        toast.error("Password must include:", {
+          description: passwordErrors.join(", "),
+          duration: 5000
+        });
+        return;
+      }
+
+      // Show loading toast
+      const loadingToast = toast.loading("Creating your account...");
+
+      try {
+        const response = await signup(name, email, password);
+        
+        if (response.success) {
+          toast.dismiss(loadingToast);
+          toast.success("Account created successfully! Welcome aboard!");
+          console.log("[Signup] Registration successful, redirecting to dashboard");
+          router.push("/dashboard");
+        } else {
+          toast.dismiss(loadingToast);
+          handleSignupError(response.error);
+        }
+      } catch (error: any) {
+        console.error("[Signup] Error:", error);
+        toast.dismiss(loadingToast);
+        handleSignupError(error.message);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignupError = (error?: string) => {
+    if (!error) {
+      toast.error("Something went wrong", {
+        description: "Please try again later"
+      });
       return;
     }
 
-    try {
-      setLoading(true);
-      console.log("Signing up user:", formData.email);
-
-      const { data } = await axios.post(`${API_BASE_URL}/auth/register`, {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.toLowerCase().trim(),
-        password: formData.password,
+    if (error.includes("already exists")) {
+      toast.error("This email is already registered", {
+        description: "Please sign in instead or use a different email",
+        action: {
+          label: "Sign In",
+          onClick: () => router.push("/signin")
+        }
       });
-
-      console.log("Signup response:", data);
-
-      // Automatically log in the user after signup
-      if (data.token) {
-        setToken(data.token);
-        toast.success("Account created successfully! Redirecting to dashboard...");
-        router.push("/dashboard");
-      } else {
-        toast.success("Account created successfully! Please sign in.");
-        router.push("/signin?registered=true");
-      }
-    } catch (error: any) {
-      console.error("Signup error:", error.response.data.message);
-      toast.error(error.response.data.message)
-      const errorMsg =
-        axios.isAxiosError(error) && error.response?.data?.error
-          ? error.message
-          : "Something went wrong. Please try again.";
-      console.log(errorMsg);
-      // toast.error(errorMsg);
-    } finally {
-      setLoading(false);
+    } else if (error.toLowerCase().includes("password")) {
+      toast.error("Invalid Password", {
+        description: error,
+        duration: 5000
+      });
+    } else {
+      toast.error("Registration failed", {
+        description: error
+      });
     }
   };
+
+  // Show loading state during initial auth check
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white" />
+      </div>
+    );
+  }
+
+  // Don't render the form if user is authenticated
+  if (user) return null;
 
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col items-center gap-4 w-full max-w-md px-4">
         <h1 className="text-2xl font-bold mb-4">Create your account</h1>
-        <SignupForm onSubmit={handleSubmit} loading={loading} />
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Already have an account?{" "}
-          <a href="/signin" className="text-blue-600 hover:underline">
-            Sign in
-          </a>
-        </p>
+        <SignupForm onSubmit={handleSubmit} loading={isLoading} />
+        <div className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
+          <p>
+            Already have an account?{" "}
+            <Link href="/signin" className="text-blue-600 hover:underline">
+              Sign in
+            </Link>
+          </p>
+          <p className="text-xs">
+            By signing up, you agree to our{" "}
+            <Link href="/terms" className="text-blue-600 hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/privacy" className="text-blue-600 hover:underline">
+              Privacy Policy
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

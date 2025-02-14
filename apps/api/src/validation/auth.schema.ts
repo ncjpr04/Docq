@@ -1,18 +1,14 @@
-import { z } from 'zod';
+import { z } from "zod";
 
+// Schema for user registration
 export const registerSchema = z.object({
-  firstName: z.string().min(2, { message: 'First name must be at least 2 characters' }),
-  lastName: z.string().min(2, { message: 'Last name must be at least 2 characters' }),
-  email: z.string().email({ message: 'Invalid email format' }),
-  password: z.string()
-    .min(6, { message: 'Password must be at least 6 characters' })
-    .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
-    .regex(/\d/, { message: 'Password must contain at least one number' })
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, { message: 'Password must contain at least one special character' })
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+// Schema for user login
 export const loginSchema = z.object({
-  email: z.string().email({ message: 'Invalid email format' }),
-  password: z.string()
-    .min(6, { message: 'Password must be at least 6 characters' }) // Ensuring consistency with registration
+  email: z.string().email("Invalid email format"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });

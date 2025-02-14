@@ -56,8 +56,11 @@ const userSchema = new mongoose.Schema(
       minlength: 6,
       select: false, // Exclude from queries by default
     },
-    firstName: { type: String, required: true, trim: true },
-    lastName: { type: String, required: true, trim: true },
+    name: {
+      type: String, required: true, trim: true
+    },
+    // firstName: { type: String, required: true, trim: true },
+    //   lastName: { type: String, required: true, trim: true },
     role: {
       type: String,
       enum: ["user", "admin"],
@@ -70,10 +73,10 @@ const userSchema = new mongoose.Schema(
 );
 
 // Pre-save hook: Generate full name
-userSchema.pre("save", function (next) {
-  this.name = `${this.firstName} ${this.lastName}`.trim();
-  next();
-});
+// userSchema.pre("save", function (next) {
+//   this.name = `${this.firstName} ${this.lastName}`.trim();
+//   next();
+// });
 
 // Hide sensitive fields when sending user data
 userSchema.methods.toSafeObject = function () {
@@ -86,9 +89,9 @@ userSchema.methods.toSafeObject = function () {
 userSchema.index({ email: 1 });
 
 // Static method to find users by email
-userSchema.statics.findByEmail = function (email: string) {
-  return this.findOne({ email: email.toLowerCase() });
-};
+// userSchema.statics.findByEmail = function (email: string) {
+//   return this.findOne({ email: email.toLowerCase() });
+// };
 
 // =====================
 // ✅ Document Schema
